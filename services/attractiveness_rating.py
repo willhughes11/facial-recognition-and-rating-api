@@ -1,6 +1,6 @@
 import numpy as np
 from services.utility_functions import preprocess_image
-# from tensorflow.keras.models import load_model
+from tensorflow.keras.models import load_model
 
 class Attractiveness_Rating():
     def __init__(self):
@@ -9,10 +9,10 @@ class Attractiveness_Rating():
 
     def attractiveness_rating(self, images):
         scores = []
-        # for image in images:
-        #     model = load_model(self.model_path)
-        #     score = model.predict(np.expand_dims(preprocess_image(image,(350,350)), axis=0))
-        #     scores.append(score[0][0])
+        for image in images:
+            model = load_model(self.model_path)
+            score = model.predict(np.expand_dims(preprocess_image(image,(350,350)), axis=0))
+            scores.append(score[0][0])
         
         return scores
 
