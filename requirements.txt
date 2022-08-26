@@ -4,4 +4,4 @@ numpy==1.22.3
 opencv_python==4.6.0.66
 Pillow==9.2.0
 requests==2.27.1
-tensorflow-cpu
+# tensorflow-cpu
