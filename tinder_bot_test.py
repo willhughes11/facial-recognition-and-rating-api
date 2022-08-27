@@ -40,5 +40,5 @@ for i in output:
         # cv2.imshow('VERTICAL', vertical)
         # cv2.waitKey(0)
         # cv2.destroyAllWindows()
-        break
-    break
+    #     break
+    # break

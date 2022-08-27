@@ -10,7 +10,6 @@ import requests
 import numpy as np
 import traceback
 
-
 app = Flask(__name__)
 
 @app.route('/')

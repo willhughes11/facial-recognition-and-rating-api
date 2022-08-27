@@ -1,3 +1,4 @@
+tensorflow-cpu
 gunicorn
 deepface
 Flask
@@ -5,5 +6,4 @@ numpy
 opencv_python
 Pillow
 requests
-tensorflow
 gevent
