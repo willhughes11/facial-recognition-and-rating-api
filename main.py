@@ -1,4 +1,5 @@
 from app import app
+import os
 
-# Gets the app from app.py and runs it
-app.run()
+port = int(os.environ.get("PORT", 8080))
+app.run(host='0.0.0.0', port=port)
