@@ -13,6 +13,7 @@ import validators
 import base64
 import binascii
 from io import BytesIO
+import cv2
 
 app = Flask(__name__)
 
@@ -75,6 +76,10 @@ def facial_rating_services():
             if len(arr) > 0:
                 compared_faces = fr.compare_faces(arr)
                 face_race = fr.analyze_images(compared_faces)
+                vertical = np.concatenate(compared_faces, axis=0)
+                cv2.imwrite('image.png',vertical)
+                # cv2.waitKey(0)
+                # cv2.destroyAllWindows()
 
                 if preferred_race is None or face_race in preferred_race:
                     ratings = ar.attractiveness_rating(compared_faces)
