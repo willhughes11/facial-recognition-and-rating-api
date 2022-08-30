@@ -9,6 +9,10 @@ from PIL import Image
 import requests
 import numpy as np
 import traceback
+import validators
+import base64
+import binascii
+from io import BytesIO
 
 app = Flask(__name__)
 
@@ -45,10 +49,16 @@ def facial_rating_services():
             
             all_faces = []
             for image in images:
-                img_url = image
-
+                url = validators.url(image)
                 try:
-                    im = Image.open(requests.get(img_url, stream=True).raw).convert('RGB')
+                    if url:
+                        im = Image.open(requests.get(image, stream=True).raw).convert('RGB')
+                    else:
+                        try:
+                            base64.b64decode(image, validate=True)
+                            im = Image.open(BytesIO(base64.b64decode(image))).convert('RGB')
+                        except binascii.Error:
+                            abort(400)
                 except:
                     im = None
 
