@@ -11,7 +11,7 @@ class FacialRecognition():
         faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades+'haarcascade_frontalface_default.xml')
         faces = faceCascade.detectMultiScale(
         gray,
-        scaleFactor=1.15,
+        scaleFactor=1.2,
         minNeighbors=5,
         minSize=(30, 30),
         flags = cv2.CASCADE_SCALE_IMAGE)
