@@ -8,7 +8,6 @@ ar = Attractiveness_Rating()
 from PIL import Image
 import requests
 import numpy as np
-import traceback
 import validators
 import base64
 import binascii
@@ -23,92 +22,96 @@ def index():
 
 @app.route('/rating', methods=['POST'])
 def facial_rating_services():
-    try:
-        args = request.args
-        data = request.get_json()
+    args = request.args
+    data = request.get_json()
 
-        if 'images' in data:
-            images = data['images']
-        else:
-            images = None
+    if 'images' in data:
+        images = data['images']
+    else:
+        images = None
 
-        if data is None or images is None or len(images) == 0 or len(images) > 9:
-            abort(400)
-        elif type(data) is not dict or type(images) is not list:
-            abort(422)
-        else:
-            if 'race' in args:
-                preferred_race = args['race']
-                preferred_race = preferred_race.split(',')
-            else:
+    if data is None or images is None or len(images) == 0 or len(images) > 10:
+        abort(422)
+    elif type(data) is not dict or type(images) is not list:
+        abort(422)
+    else:
+        if 'race' in args:
+            preferred_race = args['race']
+            preferred_race = eval(preferred_race)
+            if len(preferred_race) == 0:
                 preferred_race = None
-            
-            if 'rating' in args:
-                min_rating = args['rating']
             else:
-                min_rating = None
-            
-            all_faces = []
-            for image in images:
-                url = validators.url(image)
-                try:
-                    if url:
-                        im = Image.open(requests.get(image, stream=True).raw).convert('RGB')
-                    else:
-                        try:
-                            base64.b64decode(image, validate=True)
-                            im = Image.open(BytesIO(base64.b64decode(image))).convert('RGB')
-                        except binascii.Error:
-                            abort(400)
-                except:
-                    im = None
+                available_races = ["asian", "white", "middle eastern", "indian", "latino", "black"]
+                check = any(item in preferred_race for item in available_races)
 
-                if im:
-                    identified_faces = fr.identify_faces(im)
-                    all_faces.append(identified_faces)
-
-            arr = []
-            if len(all_faces) > 0:
-                for i in all_faces:
-                    for x in i:
-                        arr.append(x)
-
-            if len(arr) > 0:
-                compared_faces = fr.compare_faces(arr)
-                face_race = fr.analyze_images(compared_faces)
-                vertical = np.concatenate(compared_faces, axis=0)
-                cv2.imwrite('image.png',vertical)
-                # cv2.waitKey(0)
-                # cv2.destroyAllWindows()
-
-                if preferred_race is None or face_race in preferred_race:
-                    ratings = ar.attractiveness_rating(compared_faces)
-                    avg_rating = float(np.average(ratings))
-                    if min_rating is None:
-                        match = False
-                    elif avg_rating >= float(min_rating):
-                        match = True
-                    else:
-                        match = False
+                if not check:
+                    abort(400)
+        else:
+            preferred_race = None
+        
+        if 'rating' in args:
+            min_rating = args['rating']
+        else:
+            min_rating = None
+        
+        all_faces = []
+        for image in images:
+            url = validators.url(image)
+            try:
+                if url:
+                    im = Image.open(requests.get(image, stream=True).raw).convert('RGB')
                 else:
-                    avg_rating = float(0)
-                    match = False
+                    try:
+                        base64.b64decode(image, validate=True)
+                        im = Image.open(BytesIO(base64.b64decode(image))).convert('RGB')
+                    except binascii.Error:
+                        abort(400)
+            except:
+                im = None
 
-                return jsonify({
-                    'race': face_race,
-                    'rating': avg_rating,
-                    'match': match
-                }), 200
-            
+            if im:
+                identified_faces = fr.identify_faces(im)
+                all_faces.append(identified_faces)
+
+        arr = []
+        if len(all_faces) > 0:
+            for i in all_faces:
+                for x in i:
+                    arr.append(x)
+
+        if len(arr) > 0:
+            compared_faces = fr.compare_faces(arr)
+            face_race = fr.analyze_images(compared_faces)
+            vertical = np.concatenate(compared_faces, axis=0)
+            cv2.imwrite('image.png',vertical)
+            # cv2.waitKey(0)
+            # cv2.destroyAllWindows()
+
+            if preferred_race is None or face_race in preferred_race:
+                ratings = ar.attractiveness_rating(compared_faces)
+                avg_rating = float(np.average(ratings))
+                if min_rating is None:
+                    match = False
+                elif avg_rating >= float(min_rating):
+                    match = True
+                else:
+                    match = False
             else:
-                return jsonify({
-                    'race': None,
-                    'rating': None,
-                    'match': False
-                }), 200
-    except:
-        print(traceback.format_exc())
-        abort(500)
+                avg_rating = float(0)
+                match = False
+
+            return jsonify({
+                'race': face_race,
+                'rating': avg_rating,
+                'match': match
+            }), 200
+        
+        else:
+            return jsonify({
+                'race': None,
+                'rating': None,
+                'match': False
+            }), 200
 
 #----------------------------------------------------------------------------#
 # Error handlers
