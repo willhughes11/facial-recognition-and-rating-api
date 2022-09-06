@@ -90,9 +90,7 @@ def facial_rating_services():
             if preferred_race is None or face_race in preferred_race:
                 ratings = ar.attractiveness_rating(compared_faces)
                 avg_rating = float(np.average(ratings))
-                if min_rating is None:
-                    match = True
-                elif avg_rating >= float(min_rating):
+                if min_rating is None or avg_rating >= float(min_rating):
                     match = True
                 else:
                     match = False
