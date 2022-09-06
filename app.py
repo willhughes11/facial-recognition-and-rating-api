@@ -81,7 +81,10 @@ def facial_rating_services():
 
         if len(arr) > 0:
             compared_faces = fr.compare_faces(arr)
-            face_race = fr.analyze_images(compared_faces)
+            if len(preferred_race) > 0:
+                face_race = fr.analyze_images(compared_faces)
+            else:
+                face_race = None
             vertical = np.concatenate(compared_faces, axis=0)
             cv2.imwrite('image.png',vertical)
             # cv2.waitKey(0)
