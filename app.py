@@ -38,8 +38,8 @@ def facial_rating_services():
         if 'race' in args:
             preferred_race = args['race']
             preferred_race = eval(preferred_race)
-            if len(preferred_race) == 0:
-                preferred_race = None
+            if preferred_race is None or len(preferred_race) == 0:
+                preferred_race = []
             else:
                 available_races = ["asian", "white", "middle eastern", "indian", "latino", "black"]
                 check = any(item in preferred_race for item in available_races)
@@ -47,7 +47,7 @@ def facial_rating_services():
                 if not check:
                     abort(400)
         else:
-            preferred_race = None
+            preferred_race = []
         
         if 'rating' in args:
             min_rating = args['rating']
@@ -90,7 +90,7 @@ def facial_rating_services():
             # cv2.waitKey(0)
             # cv2.destroyAllWindows()
 
-            if preferred_race is None or face_race in preferred_race:
+            if len(preferred_race) == 0 or face_race in preferred_race:
                 ratings = ar.attractiveness_rating(compared_faces)
                 avg_rating = float(np.average(ratings))
                 if min_rating is None or avg_rating >= float(min_rating):
