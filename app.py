@@ -51,6 +51,8 @@ def facial_rating_services():
         
         if 'rating' in args:
             min_rating = args['rating']
+            if min_rating < 0 or min_rating > 5:
+                abort(400)
         else:
             min_rating = None
         
