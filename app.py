@@ -50,7 +50,7 @@ def facial_rating_services():
             preferred_race = []
         
         if 'rating' in args:
-            min_rating = args['rating']
+            min_rating = float(args['rating'])
             if min_rating < 0 or min_rating > 5:
                 abort(400)
         else:
@@ -95,7 +95,7 @@ def facial_rating_services():
             if len(preferred_race) == 0 or face_race in preferred_race:
                 ratings = ar.attractiveness_rating(compared_faces)
                 avg_rating = float(np.average(ratings))
-                if min_rating is None or avg_rating >= float(min_rating):
+                if min_rating is None or avg_rating >= min_rating:
                     match = True
                 else:
                     match = False
